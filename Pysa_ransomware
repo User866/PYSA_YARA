@@ -1,0 +1,17 @@
+rule Pysa_ransomware
+{
+meta:
+    description = "YARA rule for identifying the Pysa ransomware."
+    author = "Aleksandar Milenkoski"
+    date = "2021-07"
+
+strings:
+    $code = { 68 00 04 00 00 ?? ?? E8 7C BD 02 00 ?? ?? E8 A5 C2 02 00 ?? ?? ?? ?? ?? ?? ?? ?? 
+    DD ?? ?? ?? ?? ?? ?? ?? DD ?? ?? E8 5D 81 03 00 59 ?? E8 B6 BE 02 00 }
+    $s1 = "CryptoPP" ascii wide  
+    $s2 = "pysa" ascii wide nocase fullword
+    $s3 = "Protect Your System Amigo" ascii wide nocase
+
+condition:
+    uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550 and $s2 and 2 of ($code,$s1,$s3)
+}
